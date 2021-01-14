@@ -241,7 +241,7 @@ own ILP network. Now you can change things around to see what happens. Also,
 the various script files are well documented in hopes that it makes understanding
 how to configure ILP a little easier.
 
-## Tear down the networks
+### Tear down the networks
 
 In each terminal displaying docker-compose logs, hit Ctrl-C and wait for it to
 stop. Then in each of those terminals run:
