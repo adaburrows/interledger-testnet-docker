@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# We need to have the proper docker network created so we can attach all of the
+# docker containers from both the docker-compose and the following aliases:
+docker network create --attachable --subnet 10.13.3.0/24 ilp-test-net

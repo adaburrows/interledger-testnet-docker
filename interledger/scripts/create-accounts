@@ -1,0 +1,123 @@
+#!/bin/sh
+
+. ./interledger/scripts/aliases
+
+# Create the Xochitl account on their ILP node
+xochitl-cli accounts create xochitl \
+  --auth admin.xochitl \
+  --ilp-address test.xochitl \
+  --asset-code ETH \
+  --asset-scale 18 \
+  --ilp-over-http-incoming-token token.xochitl
+
+# Create the Cuauhtli account on their ILP node
+cuauhtli-cli accounts create cuauhtli \
+  --auth admin.cuauhtli \
+  --ilp-address test.cuauhtli \
+  --asset-code ETH \
+  --asset-scale 18 \
+  --ilp-over-http-incoming-token token.cuauhtli
+
+# Create the Cuauhtli connector account on Xochitl's ILP Connector
+xochitl-cli accounts create cuauhtli \
+  --auth admin.xochitl \
+  --ilp-address test.cuauhtli \
+  --asset-code ETH \
+  --asset-scale 18 \
+  --settlement-engine-url http://ilp-xochitl-eth:3000 \
+  --ilp-over-http-incoming-token token.cuauhtli \
+  --ilp-over-http-outgoing-token token.xochitl \
+  --ilp-over-http-url http://ilp-cuauhtli-node:7770/accounts/xochitl/ilp \
+  --settle-threshold 7 \
+  --settle-to 0 \
+  --routing-relation Peer
+
+# Explanation:
+# Create the Cuauhtli connector account on Xochitl's ILP connector
+# xochitl-cli accounts create cuauhtli \
+#  # set the admin token used for this server to connect to the API
+#  --auth admin.xochitl \
+#  # set the ILP address for this account
+#  --ilp-address test.cuauhtli \
+#  # set the asset code to ethereum
+#  --asset-code ETH \
+#  # set the asset scale to 18 (i.e. 1 WEI)
+#  --asset-scale 18 \
+#  # set up the settlment engine we use for this, in this case it's Xochitl's
+#  # configured with their private ethreum key (see xochitl/config-eth.yml)
+#  --settlement-engine-url http://ilp-xochitl-eth:3000 \
+#  # set up a token expected to be received by this connector for this account
+#  --ilp-over-http-incoming-token token.cuauhtli \
+#  # set up a token sent to other connectors fot this account
+#  --ilp-over-http-outgoing-token token.xochitl \
+#  # set the url used to comminicate with Cuauhtli's connector
+#  --ilp-over-http-url http://ilp-cuauhtli-node:7770/accounts/xochitl/ilp \
+#  # settle when we hit 7 as a balance
+#  --settle-threshold 7 \
+#  # make sure the balance is zeroed at settlement (could also prepay with a negative amount)
+#  --settle-to 0 \
+#  # set up a Peer relationship and not a child relationship
+#  --routing-relation Peer
+
+# Create the Xochitl connector account on Cuauhtli's ILP connector
+cuauhtli-cli accounts create xochitl \
+  --auth admin.cuauhtli \
+  --ilp-address test.xochitl \
+  --asset-code ETH \
+  --asset-scale 18 \
+  --max-packet-amount 100000 \
+  --settlement-engine-url http://ilp-cuauhtli-eth:3000 \
+  --ilp-over-http-incoming-token token.xochitl \
+  --ilp-over-http-outgoing-token token.cuauhtli \
+  --ilp-over-http-url http://ilp-xochitl-node:7770/accounts/cuauhtli/ilp \
+  --min-balance -150000 \
+  --settle-threshold 7 \
+  --settle-to 0 \
+  --routing-relation Peer
+
+# Explanation:
+# Create the Xochitl connector account on Cuauhtli's ILP connector
+# cuauhtli-cli accounts create xochitl \
+#  # set the admin token used for this server to connect to the API
+#  --auth admin.cuauhtli \
+#  # set the ILP address for this account
+#  --ilp-address test.xochitl \
+#  # set the asset code to ethereum
+#  --asset-code ETH \
+#  # set the asset scale to 18 (i.e. 1 WEI)
+#  --asset-scale 18 \
+#  # only allow 100000 to be settled in each ILP packet
+#  --max-packet-amount 100000 \
+#  # set up the settlment engine we use for this, in this case it's Cuauhtli's
+#  # configured with their private ethreum key (see cuauhtli/config-eth.yml)
+#  --settlement-engine-url http://ilp-cuauhtli-eth:3000 \
+#  # set up a token that should be received by this connector for this account
+#  --ilp-over-http-incoming-token token.xochitl \
+#  # set up a token sent to other connectors for this account
+#  --ilp-over-http-outgoing-token token.cuauhtli \
+#  # set the url used to comminicate with Xochitl's connector
+#  --ilp-over-http-url http://ilp-xochitl-node:7770/accounts/cuauhtli/ilp \
+#  --min-balance -150000 \
+#  # settle when we hit 7 as a balance
+#  --settle-threshold 7 \
+#  # make sure the balance is zeroed at settlement (could also prepay with a negative amount)
+#  --settle-to 0 \
+#  --routing-relation Peer
+
+# Make ILP account balances match the wallets
+# This won't work for larger balances that get displayed in e-notation.
+
+# JS for retrieving balance
+SCRIPT="eth.getBalance(eth.accounts[0])"
+# fetch the actual balance on the eth-xochitl node
+XOCHITL_B=`docker exec eth-xochitl geth attach /root/data/geth.ipc --exec "$SCRIPT"`
+# fetch the account-id from the first redis db (0)
+XOCHITL=`docker exec ilp-redis redis-cli -n 0 HGET usernames xochitl | cut -d'"' -f2`
+# set account value on first redis db (0)
+docker exec ilp-redis redis-cli -n 0 HSET accounts:$XOCHITL balance "$XOCHITL_B"
+# fetch the acutal balance on the eth-cuauhtli node
+CUAUHTLI_B=`docker exec eth-cuauhtli geth attach /root/data/geth.ipc --exec "$SCRIPT"`
+# fetch the account-id from the second redis db (1)
+CUAUHTLI=`docker exec ilp-redis redis-cli -n 1 HGET usernames cuauhtli | cut -d'"' -f2`
+# set account value on second redis db (1)
+docker exec ilp-redis redis-cli -n 1 HSET accounts:$CUAUHTLI balance "$CUAUHTLI_B"

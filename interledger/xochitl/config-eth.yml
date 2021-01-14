@@ -1,0 +1,21 @@
+# On Xochitl's node run
+# # ethkey inspect --private --passwordfile /root/password \
+#     /root/keystore/UTC--2020-12-25T05-44-58.850Z--0x075ddc7e2f96e65a7835e55fb3dbfd438c4a26e0
+# to get the key:
+private_key: 1c801fac15aba86e9dbf2512aaca2804768bda8ab9058b6d269f2d3bad156a43
+# Our private network is set to chain id 13
+chain_id: 13
+# We are transacting in Wei
+asset_scale: 18
+# Don't wait for any confirmations
+confirmations: 0
+# Only poll once a second
+poll_frequency: 1000
+# Ethereum node to connect to, in this case, it Xochitl's node
+ethereum_url: http://eth-xochitl:8545
+# ILP connector node to connect to
+connector_url: http://ilp-xochitl-node:7771
+# URL for redis
+redis_url: redis://ilp-redis:6379/3
+# Interface and port to bind settlement engine
+settlement_api_bind_address: 0.0.0.0:3000

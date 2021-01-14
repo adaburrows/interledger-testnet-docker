@@ -1,0 +1,17 @@
+ilp_address: test.xochitl
+secret_seed: 037aa8a58ebd20e4ed5b2978b43d2c56bc3140e5c69c56920f59bff69640c4ba
+admin_auth_token: admin.xochitl
+database_url: redis://ilp-redis:6379/0
+# database_prefix: ilp_
+http_bind_address: 0.0.0.0:7770
+settlement_api_bind_address: 0.0.0.0:7771
+# settlement_after: 0
+# default_spsp_account: my_account
+# route_broadcast_interval: 30000
+# exchange_rate.provider:
+#   CryptoCompare: API_KEY
+# exchange_rate.poll_interval: 60000
+# exchange_rate.spread: 0.01
+# prometheus.bind_address: address:port
+# prometheus.histogram_window: 300000
+# prometheus.histogram_granularity: 10000

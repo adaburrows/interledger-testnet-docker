@@ -1,0 +1,86 @@
+version: '3'
+services:
+
+  # Our redis instance shared between all of the nodes
+  ilp-redis:
+    image: "redis:rc-alpine"
+    hostname: "ilp-redis"
+    container_name: "ilp-redis"
+    networks:
+      - interledger
+
+  # Xochitl's ILP node
+  ilp-xochitl-node:
+    image: "interledgerrs/ilp-node"
+    hostname: "ilp-xochitl-node"
+    container_name: "ilp-xochitl-node"
+    command: /root/config.yml
+    depends_on:
+      - ilp-redis
+    networks:
+      - interledger
+    volumes:
+      - ./interledger/xochitl/config.yml:/root/config.yml:ro
+
+  # Xochitl's Ethereum settlement engine
+  ilp-xochitl-eth:
+    image: "interledgerrs/ilp-settlement-ethereum"
+    hostname: "ilp-xochitl-eth"
+    container_name:  "ilp-xochitl-eth"
+    command: /root/config-eth.yml
+    depends_on:
+      - ilp-redis
+    networks:
+      - interledger
+      - ethereum
+    volumes:
+      - ./interledger/xochitl/config-eth.yml:/root/config-eth.yml:ro
+
+  # Cuauhtli's ILP node
+  ilp-cuauhtli-node:
+    image: "interledgerrs/ilp-node"
+    hostname: "ilp-cuauhtli-node"
+    container_name: "ilp-cuauhtli-node"
+    command: /root/config.yml
+    depends_on:
+      - ilp-redis
+    networks:
+      - interledger
+    volumes:
+      - ./interledger/cuauhtli/config.yml:/root/config.yml:ro
+
+  # Cuauhtli's Ethereum settlement engine
+  ilp-cuauhtli-eth:
+    image: "interledgerrs/ilp-settlement-ethereum"
+    hostname: "ilp-cuauhtli-eth"
+    container_name: "ilp-cuauhtli-eth"
+    command: /root/config-eth.yml
+    depends_on:
+      - ilp-redis
+    networks:
+      - interledger
+      - ethereum
+    volumes:
+      - ./interledger/cuauhtli/config-eth.yml:/root/config-eth.yml:ro
+
+  # Cuetzpalli's ILP node (this is for later)
+  # ilp-cuetzpalli-node:
+  #   image: "interledgerrs/ilp-node"
+  #   hostname: "ilp-cuetzpalli"
+  #   container_name: "ilp-cuetzpalli"
+  #   command: /root/config.yml
+  #   depends_on:
+  #     - ilp-redis
+  #   networks:
+  #     - interledger
+  #   volumes:
+  #     - ./interledger/cuetzpalli/config.yml:/root/config.yml:ro
+
+networks:
+  # Use the externally created networks for more flexibility
+  interledger:
+    external:
+      name: ilp-test-net
+  ethereum:
+    external:
+      name: eth-test-net

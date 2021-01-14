@@ -1,0 +1,21 @@
+# On Cuauhtli's node run:
+# # ethkey inspect --private --passwordfile /root/password \
+#     /root/keystore/UTC--2020-12-25T05-46-39.243Z--0x65f5641480b861815e2c188f6097d519a8c48c98
+# to get the key:
+private_key: 206f4b6c19d6d058c4ff6d88071fd7f0d9fd361677652affcae3c3ddf87d1f10
+# Our private network is set to chain id 13
+chain_id: 13
+# We are transacting in Wei
+asset_scale: 18
+# Don't wait for any confirmations
+confirmations: 0
+# Only poll once a second
+poll_frequency: 1000
+# Ethereum node to connect to, in this case, it Cuauhtli's node
+ethereum_url: http://eth-cuauhtli:8545
+# ILP connector node to connect to
+connector_url: http://ilp-cuauhtli-node:7771
+# URL for redis
+redis_url: redis://ilp-redis:6379/4
+# Interface and port to bind settlement engine
+settlement_api_bind_address: 0.0.0.0:3000

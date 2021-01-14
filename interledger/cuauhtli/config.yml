@@ -1,0 +1,17 @@
+ilp_address: test.cuauhtli
+secret_seed: d02d693e860bac5016f688411d6e093978b2ae4e5d324ac08cb8fac93ab7af85
+admin_auth_token: admin.cuauhtli
+database_url: redis://ilp-redis:6379/1
+# database_prefix: ilp_
+http_bind_address: 0.0.0.0:7770
+settlement_api_bind_address: 0.0.0.0:7771
+# settlement_after: 0
+# default_spsp_account: my_account
+# route_broadcast_interval: 30000
+# exchange_rate.provider:
+#   CryptoCompare: API_KEY
+# exchange_rate.poll_interval: 60000
+# exchange_rate.spread: 0.01
+# prometheus.bind_address: address:port
+# prometheus.histogram_window: 300000
+# prometheus.histogram_granularity: 10000

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Create aliases for connecting to the ilp-nodes using the docker ilp-cli image:
+alias    xochitl-cli="docker run --rm --network ilp-test-net interledgerrs/ilp-cli --node http://ilp-xochitl-node:7770"
+alias   cuauhtli-cli="docker run --rm --network ilp-test-net interledgerrs/ilp-cli --node http://ilp-cuauhtli-node:7770"
+alias cuetzpalli-cli="docker run --rm --network ilp-test-net interledgerrs/ilp-cli --node http://ilp-cuetzpalli-node:7770"
