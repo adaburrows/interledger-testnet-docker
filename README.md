@@ -276,3 +276,4 @@ Here are some very important pointers on where to find the configuration options
   One of the best sets of documentation for this is found in the:
   * [CLI tool](https://github.com/interledger-rs/interledger-rs/blob/master/crates/ilp-cli/src/main.rs)
   * [Open API Specification](https://github.com/interledger-rs/interledger-rs/blob/master/docs/api.yml)
+  * [interledger-rs/docs/peering.md](https://github.com/interledger-rs/interledger-rs/blob/master/docs/peering.md)
